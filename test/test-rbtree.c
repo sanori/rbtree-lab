@@ -11,7 +11,7 @@ void test_init(void) {
 }
 
 // root node's color should be black
-void test_insert_single(key_t key) {
+void test_insert_single(const key_t key) {
   rbtree *t = new_rbtree();
   node_t *p = rbtree_insert(t, key);
   assert(p != NULL);
