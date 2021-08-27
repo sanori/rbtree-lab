@@ -1,3 +1,4 @@
+#include <stddef.h>
 
 typedef enum {RED, BLACK} color_t;
 typedef int key_t; 
@@ -12,9 +13,9 @@ typedef struct {
 } rbtree;
 
 rbtree* new_rbtree();
-int delete_rbtree(rbtree*);
+void delete_rbtree(rbtree*);
 
-int rbtree_insert(rbtree*, key_t);
+node_t *rbtree_insert(rbtree*, key_t);
 node_t *rbtree_find(rbtree*, key_t);
 node_t *rbtree_min(rbtree*);
 node_t *rbtree_max(rbtree*);
