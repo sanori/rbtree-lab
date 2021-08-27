@@ -11,7 +11,14 @@ typedef struct {
   node_t *root;
 } rbtree;
 
+/**
+ * Create a new rbtree
+ * @return pointer of created rbtree
+ */
 rbtree* new_rbtree();
+/**
+ * @brief Remove existing rb tree and reclaim used memory
+ */
 int delete_rbtree(rbtree*);
 
 int rbtree_insert(rbtree*, key_t);
