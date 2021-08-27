@@ -16,6 +16,7 @@ typedef struct {
  * @return pointer of created rbtree
  */
 rbtree* new_rbtree();
+
 /**
  * @brief Remove existing rb tree and reclaim used memory
  */

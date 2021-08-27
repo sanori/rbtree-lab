@@ -2,5 +2,8 @@
 
 driver: driver.o rbtree.o
 
+html:
+	doxygen Doxyfile
+
 clean:
-	rm driver *.o
+	rm -rf html driver *.o

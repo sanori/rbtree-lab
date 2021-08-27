@@ -1,4 +1,7 @@
+# Targets
 driver
+html/
+
 # Prerequisites
 *.d
 
