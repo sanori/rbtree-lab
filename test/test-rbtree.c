@@ -41,13 +41,11 @@ static void init_color_traverse(void) {
 static bool color_traverse(const node_t *p, const color_t parent_color,
                            const int black_depth) {
   if (p == NULL) {
-    if (touch_nil) {
-      if (black_depth != max_black_depth) {
-        return false;
-      }
-    } else {
+    if (!touch_nil) {
       touch_nil = true;
       max_black_depth = black_depth;
+    } else if (black_depth != max_black_depth) {
+      return false;
     }
     return true;
   }
@@ -62,20 +60,56 @@ static bool color_traverse(const node_t *p, const color_t parent_color,
 void test_color_constraint(const rbtree *t) {
   assert(t != NULL);
   node_t *p = t->root;
-  assert(p != NULL);
-  assert(p->color == RBTREE_BLACK);
+  assert(p == NULL || p->color == RBTREE_BLACK);
 
   init_color_traverse();
   assert(color_traverse(p, RBTREE_BLACK, 0));
 }
 
+static bool search_traverse(const node_t *p, key_t *min, key_t *max) {
+  if (p == NULL) {
+    return true;
+  }
+
+  *min = *max = p->key;
+
+  key_t l_min, l_max, r_min, r_max;
+  l_min = l_max = r_min = r_max = p->key;
+
+  const bool lr = search_traverse(p->left, &l_min, &l_max);
+  if (!lr || l_max > p->key) {
+    return false;
+  }
+  const bool rr = search_traverse(p->right, &r_min, &r_max);
+  if (!rr || r_min < p->key) {
+    return false;
+  }
+
+  *min = l_min;
+  *max = r_max;
+  return true;
+}
+
+void test_search_constraint(const rbtree *t) {
+  assert(t != NULL);
+  node_t *p = t->root;
+  key_t min, max;
+  assert(search_traverse(p, &min, &max));
+}
+
 // rbtree should keep search tree and color constraints
 void test_rb_constraints(const key_t arr[], const size_t n) {
   rbtree *t = new_rbtree();
+  assert(t != NULL);
+
   for (int i = 0; i < n; i++) {
     rbtree_insert(t, arr[i]);
   }
+  assert(t->root != NULL);
+
   test_color_constraint(t);
+  test_search_constraint(t);
+
   delete_rbtree(t);
 }
 
