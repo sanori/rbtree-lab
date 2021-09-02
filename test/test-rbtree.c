@@ -10,20 +10,56 @@ void test_init(void) {
   delete_rbtree(t);
 }
 
-// root node's color should be black
+// root node constraint
 void test_insert_single(const key_t key) {
   rbtree *t = new_rbtree();
   node_t *p = rbtree_insert(t, key);
   assert(p != NULL);
   assert(t->root != p);
   assert(p->key == key);
-  assert(p->color == RBTREE_BLACK);  // color of root node should be black
+  // assert(p->color == RBTREE_BLACK);  // color of root node should be black
   assert(p->left == NULL);
   assert(p->right == NULL);
+  assert(p->parent == NULL);
   delete_rbtree(t);
 }
 
-// Test color constraint
+// Search tree constraint
+// The values of left subtree should be less than or equal to the current node
+// The values of right subtree should be greater than or equal to the current node
+
+static bool search_traverse(const node_t *p, key_t *min, key_t *max) {
+  if (p == NULL) {
+    return true;
+  }
+
+  *min = *max = p->key;
+
+  key_t l_min, l_max, r_min, r_max;
+  l_min = l_max = r_min = r_max = p->key;
+
+  const bool lr = search_traverse(p->left, &l_min, &l_max);
+  if (!lr || l_max > p->key) {
+    return false;
+  }
+  const bool rr = search_traverse(p->right, &r_min, &r_max);
+  if (!rr || r_min < p->key) {
+    return false;
+  }
+
+  *min = l_min;
+  *max = r_max;
+  return true;
+}
+
+void test_search_constraint(const rbtree *t) {
+  assert(t != NULL);
+  node_t *p = t->root;
+  key_t min, max;
+  assert(search_traverse(p, &min, &max));
+}
+
+// Color constraint
 // 1. Each node is either red or black. (by definition)
 // 2. All NIL nodes are considered black.
 // 3. A red node does not have a red child.
@@ -64,37 +100,6 @@ void test_color_constraint(const rbtree *t) {
 
   init_color_traverse();
   assert(color_traverse(p, RBTREE_BLACK, 0));
-}
-
-static bool search_traverse(const node_t *p, key_t *min, key_t *max) {
-  if (p == NULL) {
-    return true;
-  }
-
-  *min = *max = p->key;
-
-  key_t l_min, l_max, r_min, r_max;
-  l_min = l_max = r_min = r_max = p->key;
-
-  const bool lr = search_traverse(p->left, &l_min, &l_max);
-  if (!lr || l_max > p->key) {
-    return false;
-  }
-  const bool rr = search_traverse(p->right, &r_min, &r_max);
-  if (!rr || r_min < p->key) {
-    return false;
-  }
-
-  *min = l_min;
-  *max = r_max;
-  return true;
-}
-
-void test_search_constraint(const rbtree *t) {
-  assert(t != NULL);
-  node_t *p = t->root;
-  key_t min, max;
-  assert(search_traverse(p, &min, &max));
 }
 
 // rbtree should keep search tree and color constraints
