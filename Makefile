@@ -10,8 +10,9 @@ build: ## Build executables
 
 test:
 test: ## Test rbtree implementation
-	@echo 'test: Currently not available'
+	$(MAKE) -C test test
 	
 clean:
 clean: ## Clear build environment
 	$(MAKE) -C src clean
+	$(MAKE) -C test clean
